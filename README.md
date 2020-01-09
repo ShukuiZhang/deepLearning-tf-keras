@@ -121,3 +121,29 @@ converter.quantized_input_stats = {"input": (0., 255.)}
 tfmodel = converter.convert()
 open(os.path.join(working_path, "converted_model.tflite"), "wb").write(tfmodel)
 ```
+## 4. Manipulate stock keras model
+```
+def maik_model(img_input):
+    """
+    :param img_input: instance of layers.Input()
+    :return: a modified version of MobileNetV2 model
+    """
+    base_model = MobileNetV2(
+        include_top=False,
+        weights='imagenet',
+        input_tensor=img_input,
+        pooling='avg')
+
+    for layer in base_model.layers:
+        layer.trainable = True  # trainable has to be false in order to freeze the layers
+
+    base_model.layers.pop()
+
+    op = Conv2D(512, (3, 3), strides=(1, 2), padding='same', activation='relu')(base_model.layers[-1].output)
+    op = MaxPooling2D(pool_size=(2, 2))(op)
+    op = Conv2D(256, (1, 1), padding='same', activation='relu')(op)
+    output_tensor = GlobalMaxPooling2D()(op)
+
+    model = Model(inputs=img_input, outputs=output_tensor, name='maik_model')
+    return model
+```
