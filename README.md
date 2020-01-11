@@ -1,17 +1,27 @@
 # deepLearning-tf-keras
 
-## 1. Load mobilenet model with error like "module 'keras_applications.mobilenet' has no attribute 'relu6'", print output node name
+## 1. Load mobilenet model with error like "module 'keras_applications.mobilenet' has no attribute 'relu6'"
 ``` for keres version 2.2.4
 with CustomObjectScope({
     'relu6':keras.layers.ReLU(6.),
     'DepthwiseConv2D': keras.layers.DepthwiseConv2D}):
     model = load_model(weights_path)
-    
-# check output node name
+```
+
+## 2. output node name in tf/keras
+
+### check output node name from a keras model
+```
 node_name = [node.op.name for node in model.outputs]
 print(node_name)
-
 ```
+
+### check node name in tf (after the graph is defined)
+```
+node_names = [n.name for n in tf.get_default_graph().as_graph_def().node]
+print(node_names)
+```
+
 ## 2. What to do with `.pb` file in tensorflow
 pb stands for protobuf. In TensorFlow, the protbuf file contains the graph definition as well as the weights of the model. Thus, a pb file is all you need to be able to run a given trained model.
 
