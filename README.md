@@ -157,3 +157,6 @@ def maik_model(img_input):
     model = Model(inputs=img_input, outputs=output_tensor, name='maik_model')
     return model
 ```
+## 5. printed keras loss when training
+https://github.com/keras-team/keras/issues/10426    
+For training loss, keras does a running average over the batches. For validation loss, a conventional average over all the batches in validation data is performed. The training accuracy is the average of the accuracy values for each batch of training data during training. The training loss is carried over from the previous batch: it's the average of the losses over each batch of training data.
