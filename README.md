@@ -160,3 +160,11 @@ def maik_model(img_input):
 ## 5. printed keras loss when training
 https://github.com/keras-team/keras/issues/10426    
 For training loss, keras does a running average over the batches. For validation loss, a conventional average over all the batches in validation data is performed. The training accuracy is the average of the accuracy values for each batch of training data during training. The training loss is carried over from the previous batch: it's the average of the losses over each batch of training data.
+
+## 6. All ops in keras `Model` should happen in keras layers
+You can use keras layers on normal tensors, but if you want to make a `Model` all operations should be in keras layers.  
+E.g. assume you have tensor `a` and tensor `b`, to merge the two tensors to `c`:
+```
+c = keras.layers.Add()([a, b])  # Right approach
+c = a + b  # Wrong approach, because it doesn't happen in keras layers 
+```
