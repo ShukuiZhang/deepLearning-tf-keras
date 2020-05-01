@@ -168,3 +168,28 @@ E.g. assume you have tensor `a` and tensor `b`, to merge the two tensors to `c`:
 c = keras.layers.Add()([a, b])  # Right approach
 c = a + b  # Wrong approach, because it doesn't happen in keras layers 
 ```
+## 7. Lambda layer in keras
+Wraps arbitrary expressions as a `Layer` object. In other words, the `Lambda` layer exists so that arbitrary TensorFlow functions can be used when constructing `Sequential` and Functional API models.  
+E.g. 1:
+```
+from keras import backend as K
+
+# add one layer to expand tensor dims in last axis
+heatmap_expand_dim = keras.layers.Lambda(lambda x: K.expand_dims(x, axis=-1))(heatmap)
+```
+E.g. 2:
+```
+from keras import backend as K
+
+# add a layer that returns the concatenation of the positive part of the input and
+# the opposite of the negative part
+
+def antirectifier(x):
+    x -= K.mean(x, axis=1, keepdims=True)
+    x = K.l2_normalize(x, axis=1)
+    pos = K.relu(x)
+    neg = K.relu(-x)
+    return K.concatenate([pos, neg], axis=1)
+
+model.add(Lambda(antirectifier))
+```
